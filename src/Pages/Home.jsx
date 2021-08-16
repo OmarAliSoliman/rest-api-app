@@ -9,6 +9,9 @@ import axios from "axios";
 // react bootstrap
 import { Table } from "react-bootstrap";
 
+
+import {toast} from 'react-toastify';
+
 class Home extends Component {
   state = {
     product: [],
@@ -33,14 +36,26 @@ class Home extends Component {
   render() {
     const { product } = this.state;
 
-    const deleteItem = (index, item) => {
-      axios.delete("http://localhost:3000/product/" + item.id);
+    const deleteItem = async (index, item) => {
+
+      // copy of old product
+      const oldProduct = [...this.state.product];
 
       const newProduct = [...this.state.product];
       newProduct.splice(index, 1);
       this.setState({
         product: newProduct,
       });
+
+      try{
+        await axios.delete("http://localhost:3000/product/" + item.id);
+      }catch (ex){
+        toast.error("Wrong Choose Item");
+        this.setState({
+          product: oldProduct 
+        })
+      }
+
     };
 
     return (
